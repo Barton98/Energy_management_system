@@ -267,8 +267,7 @@ MIT License - see LICENSE file for details
 ## 👨‍💻 Autor
 
 **Twoje Imię**
-- GitHub: [@TWÓJ-USERNAME](https://github.com/TWÓJ-USERNAME)
-- LinkedIn: [Twój Profil](https://linkedin.com/in/twoj-profil)
+- LinkedIn: [@Bartosz-Jasnos] https://www.linkedin.com/in/bartosz-jasnos-1a0097217/
 
 ---
 
@@ -330,5 +329,6 @@ A: To MVP demonstracyjne. Production wymaga enhancements z sekcji "Future Enhanc
 A: Zastosowano modern Python practices (datetime.UTC), unique device IDs dla test isolation, i realistic performance expectations dla IoT.
 
 ---
+
 
 *🎉 Projekt gotowy do prezentacji na rozmowach rekrutacyjnych! 🎉*
