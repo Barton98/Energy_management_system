@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  # API Server - główna aplikacja
+  ems-api:
+    build: .
+    container_name: ems-api-server
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+    networks:
+      - ems-network
+
+  # Device Simulator - symulator urządzeń IoT  
+  ems-simulator:
+    build: .
+    container_name: ems-device-simulator
+    command: python device_sim.py
+    depends_on:
+      - ems-api
+    restart: unless-stopped
+    networks:
+      - ems-network
+    # Czeka 10 sekund na start API
+    entrypoint: ["sh", "-c", "sleep 10 && python device_sim.py"]
+
+networks:
+  ems-network:
+    driver: bridge
