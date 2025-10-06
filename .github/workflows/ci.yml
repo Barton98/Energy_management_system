@@ -27,24 +27,38 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
-        
+
+    - name: Start API server for tests
+      run: |
+        # Start API server in background for tests
+        python api.py &
+        API_PID=$!
+        echo $API_PID > api.pid
+
+        # Wait for server to be ready
+        echo "Waiting for API server to start..."
+        for i in {1..30}; do
+          if curl -s http://localhost:8000/docs > /dev/null 2>&1; then
+            echo "API server is ready!"
+            break
+          fi
+          echo "Attempt $i/30 - waiting..."
+          sleep 2
+        done
+            
     - name: Run automated tests
       run: |
+        # Run tests against the running API server
         pytest test_ems_extended.py -v
         pytest test_qa_advanced.py -v
         
-    - name: Test API basic functionality
+    - name: Stop API server
+      if: always() #Always run cleanup, even if tests fail
       run: |
-        # Start API server in background
-        python api.py &
-        API_PID=$!
-        sleep 5
-        
-        # Simple test - check if API responds
-        curl -f http://localhost:8000/docs || exit 1
-        
-        # Stop API server
-        kill $API_PID
+        if [ -f api.pid ]; then
+          kill $(cat api.pid) || echo "API server already stopped"
+          rm -f api.pid
+        fi
 
   # Job 2: Test Docker setup (basic)
   docker-test:
@@ -61,14 +75,27 @@ jobs:
         
     - name: Test minimal docker-compose
       run: |
+        # Start Docker containers
         docker-compose -f docker-compose.minimal.yml up -d
-        sleep 15
+
+        # Wait for API to be ready
+        echo "Waiting for Docker API to start..."
+        for i in {1..60}; do
+          if curl -s http://localhost:8000/docs > /dev/null 2>&1; then
+            echo "Docker API is ready!"
+            break
+          fi
+          echo "Attempt $i/60 - waiting..."
+          sleep 2
+        done
         
         # Test if API is accessible
         curl -f http://localhost:8000/docs || exit 1
         
-        # Cleanup
-        docker-compose -f docker-compose.minimal.yml down
+    - name: Cleanup Docker
+      if: always()
+      run: |
+        docker-compose -f docker-compose.minimal.yml down || echo "Cleanup completed"
 
 # This pipeline demonstrates:
 # - Automated testing on code changes
