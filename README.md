@@ -260,7 +260,7 @@ Projekt zawiera:
 
 ## 📄 Licencja
 
-MIT License - see LICENSE file for details
+Barton License
 
 ---
 
