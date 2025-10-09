@@ -2,8 +2,10 @@ import requests
 import datetime
 import time
 import random
+import os
 
-BASE = "http://localhost:8000"
+# Docker-aware URL - używa environment variable lub localhost 
+BASE = os.getenv("API_URL", "http://localhost:8000") 
 DEVICE_ID = "PV_SIM"
 
 buffer = []  # bufor store-and-forward

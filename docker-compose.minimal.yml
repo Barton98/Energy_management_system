@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # API Server - główna aplikacja
   ems-api:
@@ -15,14 +13,15 @@ services:
   ems-simulator:
     build: .
     container_name: ems-device-simulator
-    command: python device_sim.py
     depends_on:
       - ems-api
     restart: unless-stopped
     networks:
       - ems-network
-    # Czeka 10 sekund na start API
-    entrypoint: ["sh", "-c", "sleep 10 && python device_sim.py"]
+    environment:
+      - API_URL=http://ems-api:8000
+    # Czeka 15 sekund na start API, potem kończy
+    entrypoint: ["sh", "-c", "sleep 15 && python device_sim.py || exit 0"]
 
 networks:
   ems-network:
